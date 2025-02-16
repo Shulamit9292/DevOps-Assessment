@@ -5,7 +5,8 @@ pipeline {
 
     environment {
         ARTIFACT_NAME = "DevOps-Assessment-1.0.jar"
-        REPO_URL = "http://localhost:8081/artifactory/libs-release-local"
+        GIT_REPO_URL = "https://github.com/Shulamit9292/devops-pipeline-artifacts.git"
+        CREDENTIALS_ID = "git-credentials-id" // Credentials ID for GitHub
     }
 
     stages {
@@ -13,6 +14,16 @@ pipeline {
             steps {
                 script {
                     prepareEnv()
+                }
+            }
+        }
+
+        stage('Verify SCM Data') {
+            steps {
+                script {
+                    echo "Verifying SCM data..."
+                    echo "Commit Author: ${env.COMMIT_AUTHOR}"
+                    echo "Commit Message: ${env.COMMIT_MESSAGE}"
                 }
             }
         }
@@ -29,10 +40,30 @@ pipeline {
             }
         }
 
-        stage('Package and Upload') {
+        stage('Package and Upload to Git Repository') {
             steps {
-                sh "mv build/libs/*.jar ${ARTIFACT_NAME}"
-                sh "curl -u user:password -T ${ARTIFACT_NAME} ${REPO_URL}"
+                script {
+                    // Prepare the artifact for upload
+                    sh "mv build/libs/*.jar ${ARTIFACT_NAME}"
+
+                    // Set up Git credentials and upload the artifact
+                    withCredentials([usernamePassword(credentialsId: env.CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                        // Clone the artifact repository
+                        sh "git clone ${GIT_REPO_URL} temp-repo"
+
+                        // Copy the artifact to the repository
+                        sh "cp ${ARTIFACT_NAME} temp-repo/"
+
+                        // Change to the repository directory, add and commit the file
+                        dir('temp-repo') {
+                            sh "git config user.name 'Jenkins'"
+                            sh "git config user.email 'jenkins@ci.com'"
+                            sh "git add ${ARTIFACT_NAME}"
+                            sh "git commit -m 'Adding new artifact: ${ARTIFACT_NAME}'"
+                            sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git"
+                        }
+                    }
+                }
             }
         }
     }

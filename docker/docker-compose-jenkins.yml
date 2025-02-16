@@ -1,0 +1,37 @@
+version: '3'
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8090:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    environment:
+      JENKINS_OPTS: "--prefix=/jenkins"
+      JAVA_OPTS: "-Djenkins.model.Jenkins.crumbIssuerProxyCompatibility=true -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
+
+  ansible:
+    image: williamyeh/ansible:alpine3
+    container_name: ansible-container
+    volumes:
+      - ./ansible:/ansible
+    working_dir: /ansible
+    entrypoint: ["tail", "-f", "/dev/null"]
+    depends_on:
+      - jenkins
+
+  artifactory:
+    image: releases-docker.jfrog.io/jfrog/artifactory-oss:latest
+    container_name: artifactory
+    ports:
+      - "8082:8082"  # AF - UI
+      - "8081:8081"  # AF- API
+    volumes:
+      - artifactory_data:/var/opt/jfrog/artifactory
+    environment:
+      - JF_SHARED_NODE=true
+
+volumes:
+  jenkins_home:
+  artifactory_data:

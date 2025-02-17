@@ -30,7 +30,9 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/Shulamit9292/DevOps-Assessment.git'
+                git branch: 'main',
+                    credentialsId: 'github-credentials',
+                    url: 'https://github.com/Shulamit9292/DevOps-Assessment.git'
             }
         }
 

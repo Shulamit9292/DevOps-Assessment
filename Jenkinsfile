@@ -1,4 +1,4 @@
-@Library('devops-shared') _
+@Library('devops-shared@main') _
 
 pipeline {
     agent any
@@ -6,7 +6,7 @@ pipeline {
     environment {
         ARTIFACT_NAME = "DevOps-Assessment-1.0.jar"
         GIT_REPO_URL = "https://github.com/Shulamit9292/devops-pipeline-artifacts.git"
-        CREDENTIALS_ID = "git-credentials-id" // Credentials ID for GitHub
+        CREDENTIALS_ID = "github-credentials" // Credentials ID for GitHub
     }
 
     stages {

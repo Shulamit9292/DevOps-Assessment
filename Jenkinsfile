@@ -13,6 +13,7 @@ pipeline {
         stage('Prepare Environment') {
             steps {
                 script {
+                    def prepareEnv = load 'devops-shared/vars/prepareEnv.groovy'
                     prepareEnv()
                 }
             }

@@ -6,7 +6,7 @@ pipeline {
     environment {
         ARTIFACT_NAME = "DevOps-Assessment-1.0.jar"
         GIT_REPO_URL = "https://github.com/Shulamit9292/devops-pipeline-artifacts.git"
-        CREDENTIALS_ID = "github-credentials" // Credentials ID for GitHub
+        CREDENTIALS_ID = "github-credentials"
     }
 
     stages {
@@ -49,33 +49,34 @@ pipeline {
                     // Prepare the artifact for upload
                     sh "mv build/libs/DevOps-Assessment-1.0.jar ${ARTIFACT_NAME}"
 
-                    // Set up Git credentials and upload the artifact
                     withCredentials([usernamePassword(credentialsId: env.CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                        // Clone the artifact repository
-                        sh "git clone https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git temp-repo"
+                        // If the folder exists, delete it
+                        sh 'rm -rf temp-repo'
 
-                        // Change to the repository directory
+                        // Clone the repository
+                        sh 'git clone https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git temp-repo'
+
                         dir('temp-repo') {
-                            // Check if the repository is empty, if so add initial commit
-                            sh "git status"
-                            sh "git log --oneline || echo 'No commits found, adding initial commit'"
-                            sh '''
-                                if ! git log --oneline; then
-                                    touch .gitkeep
-                                    git add .gitkeep
-                                    git commit -m "Initial commit"
-                                    git push https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git
-                                fi
-                            '''
-                            // Copy the artifact to the repository
+                            // Set Git user name and email for Jenkins
+                            sh 'git config --local user.name "Jenkins"'
+                            sh 'git config --local user.email "jenkins@ci.com"'
+
+                            // Check if the repository is empty
+                            def gitLogOutput = sh(script: 'git log --oneline || echo "No commits found"', returnStdout: true).trim()
+                            if (gitLogOutput.contains("No commits found")) {
+                                sh 'touch .gitkeep'
+                                sh 'git add .gitkeep'
+                                sh 'git commit -m "Initial commit"'
+                                sh 'git push https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git'
+                            }
+
+                            // Copy the artifact
                             sh "cp ../${ARTIFACT_NAME} ./"
 
-                            // Add, commit, and push the artifact
-                            sh "git config --local user.name 'Jenkins'"
-                            sh "git config --local user.email 'jenkins@ci.com'"
-                            sh "git add ${ARTIFACT_NAME}"
-                            sh "git commit -m 'Adding new artifact: ${ARTIFACT_NAME}'"
-                            sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git"
+                            // Add to Git, commit, and push
+                            sh 'git add ${ARTIFACT_NAME}'
+                            sh 'git commit -m "Adding new artifact: ${ARTIFACT_NAME}" || echo "No changes to commit"'
+                            sh 'git push https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git'
                         }
                     }
                 }

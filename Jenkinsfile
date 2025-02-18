@@ -54,13 +54,23 @@ pipeline {
                         // Clone the artifact repository
                         sh "git clone ${GIT_REPO_URL} temp-repo"
 
-                        // Copy the artifact to the repository
-                        sh "cp ${ARTIFACT_NAME} temp-repo/"
-
-                        // Change to the repository directory, add and commit the file
+                        // Change to the repository directory
                         dir('temp-repo') {
-                            sh "git config user.name 'Jenkins'"
-                            sh "git config user.email 'jenkins@ci.com'"
+                            // Check if the repository is empty, if so add initial commit
+                            sh "git status"
+                            sh "git log --oneline || echo 'No commits found, adding initial commit'"
+                            sh '''
+                                if ! git log --oneline; then
+                                    touch .gitkeep
+                                    git add .gitkeep
+                                    git commit -m "Initial commit"
+                                    git push https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git
+                                fi
+                            '''
+                            // Copy the artifact to the repository
+                            sh "cp ../${ARTIFACT_NAME} ./"
+
+                            // Add, commit, and push the artifact
                             sh "git add ${ARTIFACT_NAME}"
                             sh "git commit -m 'Adding new artifact: ${ARTIFACT_NAME}'"
                             sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git"

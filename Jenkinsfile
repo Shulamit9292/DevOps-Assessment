@@ -52,7 +52,7 @@ pipeline {
                     // Set up Git credentials and upload the artifact
                     withCredentials([usernamePassword(credentialsId: env.CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
                         // Clone the artifact repository
-                        sh "git clone ${GIT_REPO_URL} temp-repo"
+                        sh "git clone https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git temp-repo"
 
                         // Change to the repository directory
                         dir('temp-repo') {

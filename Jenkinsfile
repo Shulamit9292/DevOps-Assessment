@@ -39,6 +39,7 @@ pipeline {
 
         stage('Build Artifact') {
             steps {
+                sh 'chmod +x gradlew'
                 sh './gradlew build'
             }
         }

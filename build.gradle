@@ -26,16 +26,16 @@ test {
 }
 
 application {
-    mainClass = 'App'
+    mainClass = 'com.example.App'
 }
 
 jar {
     manifest {
-        attributes 'Main-Class': 'App'
+        attributes 'Main-Class': 'com.example.App'
     }
+}
 
-    bootJar {
-        archivesBaseName = 'DevOps-Assessment'
-        version = '1.0'
-    }
+bootJar {
+    archivesBaseName = 'DevOps-Assessment'
+    version = '1.0'
 }

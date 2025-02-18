@@ -71,6 +71,8 @@ pipeline {
                             sh "cp ../${ARTIFACT_NAME} ./"
 
                             // Add, commit, and push the artifact
+                            sh "git config --local user.name 'Jenkins'"
+                            sh "git config --local user.email 'jenkins@ci.com'"
                             sh "git add ${ARTIFACT_NAME}"
                             sh "git commit -m 'Adding new artifact: ${ARTIFACT_NAME}'"
                             sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git"

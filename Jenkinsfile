@@ -47,7 +47,7 @@ pipeline {
             steps {
                 script {
                     // Prepare the artifact for upload
-                    sh "mv build/libs/*.jar ${ARTIFACT_NAME}"
+                    sh "mv build/libs/DevOps-Assessment-1.0.jar ${ARTIFACT_NAME}"
 
                     // Set up Git credentials and upload the artifact
                     withCredentials([usernamePassword(credentialsId: env.CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {

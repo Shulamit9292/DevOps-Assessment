@@ -1,4 +1,5 @@
 plugins {
+    id 'org.springframework.boot' version '2.7.6'
     id 'groovy'
     id 'application'
 }
@@ -25,11 +26,15 @@ test {
 }
 
 application {
-    mainClass = 'com.example.App'
+    mainClass = 'App'
 }
 
 jar {
     manifest {
-        attributes 'Main-Class': 'com.example.App'
+        attributes 'Main-Class': 'App'
     }
-}
+
+    bootJar {
+        baseName = 'DevOps-Assessment'
+        version =  '1.0'
+    }

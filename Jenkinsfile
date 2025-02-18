@@ -13,7 +13,6 @@ pipeline {
         stage('Prepare Environment') {
             steps {
                 script {
-                    //def prepareEnv = load 'devops-shared/vars/prepareEnv.groovy'
                     prepareEnv()
                 }
             }
@@ -39,7 +38,6 @@ pipeline {
 
         stage('Build Artifact') {
             steps {
-                sh 'chmod +x gradlew'
                 sh './gradlew build'
             }
         }

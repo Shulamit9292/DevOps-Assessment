@@ -32,7 +32,6 @@ services:
     environment:
       - JF_SHARED_NODE=true
 
-
 volumes:
   jenkins_home:
   artifactory_data:

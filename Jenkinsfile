@@ -63,14 +63,6 @@ pipeline {
                             sh 'git config --local user.name "Jenkins"'
                             sh 'git config --local user.email "jenkins@ci.com"'
 
-                            // Check if the repository is empty
-                            def gitLogOutput = sh(script: 'git log --oneline || echo "No commits found"', returnStdout: true).trim()
-                            if (gitLogOutput.contains("No commits found")) {
-                                sh 'touch .gitkeep'
-                                sh 'git add .gitkeep'
-                                sh 'git commit -m "Initial commit"'
-                                sh 'git push https://${GIT_USER}:${GIT_PASS}@github.com/Shulamit9292/devops-pipeline-artifacts.git'
-                            }
 
                             // Copy the artifact
                             sh "cp ../${ARTIFACT_NAME} ./"

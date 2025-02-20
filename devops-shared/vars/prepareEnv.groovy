@@ -10,7 +10,7 @@ def call() {
     env.COMMIT_AUTHOR = commitAuthor
     env.COMMIT_MESSAGE = commitMessage
 
-    // keep to file for tests
+    // save in file for feature debug
     writeFile file: 'commit_info.txt', text: "Commit by: ${commitAuthor}\nMessage: ${commitMessage}"
 
     echo "Commit information saved to commit_info.txt"

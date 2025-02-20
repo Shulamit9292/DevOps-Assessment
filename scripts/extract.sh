@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Default values for flags
+recursive=false
+verbose=false
+
+decrompressed_count=0
+not_decompressed_count=0
+
 # Function to display help message
 show_help() {
     echo "Usage: extract [-h] [-r] [-v] file [file...]"
@@ -9,32 +16,6 @@ show_help() {
     echo "  -v    Verbose mode (print decompressed files and warnings)"
     exit 0
 }
-
-# Default values for flags
-recursive=false
-verbose=false
-
-# Parsing command-line options
-while getopts ":hrv" opt; do
-  case ${opt} in
-    h ) show_help ;;  # Show help and exit
-    r ) recursive=true ;;  # Enable recursive mode
-    v ) verbose=true ;;  # Enable verbose output
-    * ) show_help ;;  # Invalid option
-  esac
-done
-shift $((OPTIND -1))  # Shift positional parameters to remove processed options
-
-# If no files are provided, show an error and exit
-if [ $# -eq 0 ]; then
-    echo "Error: No files provided"
-    show_help
-fi
-
-# Counters for tracking processed files
-decrompressed_count=0
-not_decompressed_count=0
-
 
 # Function to extract a single file
 extract_file() {
@@ -57,15 +38,30 @@ extract_file() {
     esac
 }
 
-
 # Function to process directories in recursive mode
 process_directory() {
     local dir=$1
-    local files=$(find "$dir" -type f)  # Find all files in the directory
-    for f in $files; do
-        extract_file "$f"
+    find "$dir" -type f | while read -r file; do
+        extract_file "$file"
     done
 }
+
+# Parsing command-line options
+while getopts ":hrv" opt; do
+  case ${opt} in
+    h ) show_help ;;  # Show help and exit
+    r ) recursive=true ;;  # Enable recursive mode
+    v ) verbose=true ;;  # Enable verbose output
+    * ) show_help ;;  # Invalid option
+  esac
+done
+shift $((OPTIND -1))  # Shift positional parameters to remove processed options
+
+# If no files are provided, show an error and exit
+if [ $# -eq 0 ]; then
+    echo "Error: No files provided"
+    show_help
+fi
 
 # Iterate over provided arguments and process files/directories
 for target in "$@"; do

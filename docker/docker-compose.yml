@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   web:
-    build: ./app
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
     container_name: webserver
     ports:
       - "8083:8080"
@@ -10,6 +12,7 @@ services:
       - db
     networks:
       - app-network
+    restart: always
 
   db:
     image: postgres:latest
@@ -23,6 +26,14 @@ services:
     networks:
       - app-network
     restart: always
+
+  counter:
+    image: busybox:latest
+    entrypoint: "sh -c 'while true; do wget -qO- --post-data=\"\" http://webserver:8080/hit; sleep 5; done'"
+    networks:
+      - app-network
+    depends_on:
+      - web
 
 networks:
   app-network:

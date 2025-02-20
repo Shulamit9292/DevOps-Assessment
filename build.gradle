@@ -1,5 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.7.6'
+    id 'io.spring.dependency-management' version '1.1.4'
     id 'groovy'
     id 'application'
 }
@@ -14,7 +15,7 @@ repositories {
 
 dependencies {
     implementation 'org.apache.groovy:groovy:4.0.14'
-    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.6'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.6'
     implementation 'org.postgresql:postgresql:42.5.4'
 

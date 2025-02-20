@@ -84,5 +84,16 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy using Ansible') {
+            steps {
+                script {
+                    sh '''
+                    docker exec -t ansible-container ansible-playbook -i /ansible/inventory /ansible/playbook.yml
+                    '''
+                }
+            }
+        }
+
     }
 }
